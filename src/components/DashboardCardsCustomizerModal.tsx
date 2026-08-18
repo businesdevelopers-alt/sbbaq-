@@ -59,6 +59,15 @@ export const DEFAULT_DASHBOARD_CARDS: DashboardCardConfig[] = [
     visible: true,
   },
   {
+    id: 'financial_compliance_report',
+    title: 'ملخص التقرير المالي والامتثال',
+    category: 'fees',
+    description: 'رسم بياني يوضح تطور مؤشر الامتثال الشهري ونسبة الإنفاق على التراخيص والتوقعات المالية لرسوم تجديد التراخيص للشهور الستة القادمة.',
+    badge: 'تقرير مالي وامتثال',
+    iconName: 'BarChart3',
+    visible: true,
+  },
+  {
     id: 'risks',
     title: 'مؤشر المخاطر والغرامات المحتملة والتراخيص المستحقة',
     category: 'risks',

@@ -54,6 +54,7 @@ import {
   MOCK_ORDER_STATUS_HISTORY
 } from '../data/complianceMarketData';
 import { formatSAR } from '../utils/complianceEngine';
+import { SupplierPerformanceTab } from './SupplierPerformanceTab';
 
 interface SupplierDashboardProps {
   currentUser?: UserAccount;
@@ -510,6 +511,22 @@ export const SupplierDashboard: React.FC<SupplierDashboardProps> = ({
           >
             <Layers className="w-4 h-4" />
             <span>كتالوج الحلول المعتمدة</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveSubTab('performance')}
+            className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
+              activeSubTab === 'performance'
+                ? 'bg-slate-900 text-white shadow-xs'
+                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+            }`}
+          >
+            <TrendingUp className="w-4 h-4 text-emerald-400" />
+            <span>مؤشرات الأداء ورضا المنشآت</span>
+            <span className="bg-amber-400/20 text-amber-600 text-[10px] px-2 py-0.5 rounded-full font-mono font-bold border border-amber-400/30">
+              4.95 ★
+            </span>
           </button>
         </div>
 
@@ -1023,6 +1040,17 @@ export const SupplierDashboard: React.FC<SupplierDashboardProps> = ({
             </div>
           </div>
         </div>
+      )}
+
+      {/* ---------------------------------------------------------------------- */}
+      {/* SUB-TAB 5: PERFORMANCE KPIS & SATISFACTION (مؤشرات الأداء ورضا المنشآت) */}
+      {/* ---------------------------------------------------------------------- */}
+      {activeSubTab === 'performance' && (
+        <SupplierPerformanceTab
+          activeSupplier={activeSupplier}
+          onNavigateTab={onNavigateTab}
+          showToast={showToast}
+        />
       )}
 
       {/* ---------------------------------------------------------------------- */}

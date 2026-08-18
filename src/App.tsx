@@ -152,6 +152,8 @@ import { OrderCheckoutModal } from './components/OrderCheckoutModal';
 import { ComplianceReportPdfModal } from './components/ComplianceReportPdfModal';
 import { DashboardQuickActionsFloatingMenu } from './components/DashboardQuickActionsFloatingMenu';
 import { UpcomingViolationsForecastCard } from './components/UpcomingViolationsForecastCard';
+import { FinancialAndComplianceReportCard } from './components/FinancialAndComplianceReportCard';
+import { OrderDetailsModal } from './components/OrderDetailsModal';
 
 export default function App() {
   // Authentication & Landing View State
@@ -218,6 +220,8 @@ export default function App() {
   const [isRoleSelectionOpen, setIsRoleSelectionOpen] = useState<boolean>(false);
   const [objectionViolation, setObjectionViolation] = useState<ComplianceViolation | null>(null);
   const [selectedViolationForAnalyzer, setSelectedViolationForAnalyzer] = useState<string | null>(null);
+  const [selectedViolationSolutionMappingId, setSelectedViolationSolutionMappingId] = useState<string | null>(null);
+  const [selectedOrderForModal, setSelectedOrderForModal] = useState<MasterOrder | null>(null);
   const [openDashboardAccordion, setOpenDashboardAccordion] = useState<string | null>(null);
 
   const toggleDashboardAccordion = (accordionId: string) => {
@@ -1839,7 +1843,29 @@ export default function App() {
                   documents={documents}
                   branches={branches}
                   onRenewLicense={handleInstantRenewLicense}
-                  onNavigateToTab={(tab) => setActiveTab(tab)}
+                  onNavigateToTab={(tab, entityId, entityType) => {
+                    if (entityType === 'mapping' || tab === 'violation_solutions_mapping') {
+                      setSelectedViolationSolutionMappingId(entityId || null);
+                    }
+                    setActiveTab(tab);
+                  }}
+                  onOpenAI={() => setIsAIOpen(true)}
+                  showToast={showToast}
+                />
+
+                {/* 3.6 Financial and Compliance Report Summary Card (ملخص التقرير المالي والامتثال) */}
+                <FinancialAndComplianceReportCard
+                  establishment={activeEstablishment}
+                  licenses={licenses}
+                  branches={branches}
+                  documents={documents}
+                  onNavigateToTab={(tab, entityId, entityType) => {
+                    if (entityType === 'mapping') {
+                      setSelectedViolationSolutionMappingId(entityId || null);
+                    }
+                    setActiveTab(tab);
+                  }}
+                  onOpenPdfReport={() => setIsCompliancePdfOpen(true)}
                   onOpenAI={() => setIsAIOpen(true)}
                   showToast={showToast}
                 />
@@ -1973,17 +1999,22 @@ export default function App() {
                             .map((order) => {
                               const sBadge = getOrderStatusBadge(order.status);
                               return (
-                                <div key={order.id} className="py-2.5 flex items-center justify-between gap-3 text-xs">
-                                  <div className="min-w-0">
+                                <div
+                                  key={order.id}
+                                  onClick={() => setSelectedOrderForModal(order)}
+                                  className="py-2.5 flex items-center justify-between gap-3 text-xs hover:bg-slate-50/80 -mx-2 px-2 rounded-xl transition-colors cursor-pointer group"
+                                  title="انقر لعرض تفاصيل الطلب والمعاملة الحكومية"
+                                >
+                                  <div className="min-w-0 flex-1">
                                     <div className="flex items-center gap-1.5 mb-0.5">
-                                      <span className="font-mono text-[11px] font-bold text-slate-700">
+                                      <span className="font-mono text-[11px] font-bold text-slate-700 group-hover:text-teal-700 transition-colors">
                                         #{order.id.slice(-5)}
                                       </span>
                                       <span className={`text-[10px] font-bold px-2 py-0.2 rounded-md border ${sBadge.bg}`}>
                                         {sBadge.label}
                                       </span>
                                     </div>
-                                    <p className="text-[11px] text-slate-600 truncate font-semibold">
+                                    <p className="text-[11px] text-slate-700 truncate font-semibold group-hover:text-teal-900 transition-colors">
                                       {order.items && order.items.length > 0 ? order.items[0].name : 'معاملة ترخيص وخدمات امتثال'}
                                     </p>
                                     <span className="text-[10px] text-slate-400">
@@ -1996,10 +2027,14 @@ export default function App() {
                                       {formatSAR(order.totalAmount)}
                                     </span>
                                     <button
-                                      onClick={() => setActiveTab('orders')}
-                                      className="text-[11px] font-bold text-teal-700 hover:text-teal-800 mt-0.5"
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setSelectedOrderForModal(order);
+                                      }}
+                                      className="text-[11px] font-bold text-teal-700 hover:text-teal-800 mt-0.5 bg-teal-50 hover:bg-teal-100 px-2 py-0.5 rounded-md transition-colors cursor-pointer"
                                     >
-                                      متابعة
+                                      تفاصيل الطلب
                                     </button>
                                   </div>
                                 </div>
@@ -2401,6 +2436,7 @@ export default function App() {
             {/* VIEW: Violation Solutions Mapping & Diagnostic Questions */}
             {(activeTab === 'admin_violation_solutions_mapping' || activeTab === 'violation_solutions_mapping') && (
               <ViolationSolutionsMapping
+                initialMappingId={selectedViolationSolutionMappingId}
                 onNavigateToTab={(tab) => setActiveTab(tab)}
                 showToast={showToast}
               />
@@ -2418,6 +2454,23 @@ export default function App() {
         onRemoveItem={handleRemoveFromCart}
         onSubmitOrder={handleSubmitOrder}
         activeEstablishment={activeEstablishment}
+      />
+
+      {/* Order Details Modal (نافذة تفاصيل الطلب والمعاملة الحكومية) */}
+      <OrderDetailsModal
+        isOpen={!!selectedOrderForModal}
+        onClose={() => setSelectedOrderForModal(null)}
+        order={selectedOrderForModal}
+        establishment={activeEstablishment}
+        onPayOrder={(orderId) => {
+          setOrders(prev => prev.map(o => o.id === orderId ? { ...o, paymentStatus: 'paid', status: 'in_progress' } : o));
+          showToast('تم سداد رسوم المعاملة بنجاح وجاري المتابعة الحكومية.');
+        }}
+        onApproveQuote={(orderId) => {
+          setOrders(prev => prev.map(o => o.id === orderId ? { ...o, quoteApproved: true, status: 'in_progress' } : o));
+          showToast('تم اعتماد عرض السعر والبدء في تنفيذ المعاملة.');
+        }}
+        showToast={showToast}
       />
 
       {/* Goal Selector Modal ("ماذا تريد أن تنجز اليوم؟") */}
