@@ -1,0 +1,10 @@
+{
+  "name": "Remix Remix  سبّاق الامتثال",
+  "description": "منصة وطنية متكاملة لإدارة التراخيص والوثائق الحكومية، الحافظة الرقمية، بوابة إدارة الموقع وصفحة التعريف، استلام ومعالجة الطلبات الواردة، إصدار الفواتير الضريبية ZATCA، وإدارة الموردين والشركاء الميدانيين.",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

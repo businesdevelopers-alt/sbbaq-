@@ -1,0 +1,108 @@
+@import "tailwindcss";
+
+@layer base {
+  * {
+    border-color: #e2e8f0;
+    font-family: 'Cairo', 'Alexandria', 'Almarai', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  
+  html, body {
+    font-family: 'Cairo', 'Alexandria', 'Almarai', -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    letter-spacing: -0.01em;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Cairo', 'Alexandria', 'Almarai', sans-serif;
+    letter-spacing: -0.015em;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  button, input, select, textarea, p, span, a, label, table, th, td {
+    font-family: 'Cairo', 'Alexandria', 'Almarai', sans-serif;
+  }
+
+  /* Support for font classes */
+  [class*="font-['Cairo']"] {
+    font-family: 'Cairo', 'Alexandria', sans-serif !important;
+  }
+
+  [class*="font-['Alexandria']"] {
+    font-family: 'Alexandria', 'Cairo', sans-serif !important;
+  }
+}
+
+.font-cairo {
+  font-family: 'Cairo', 'Alexandria', sans-serif;
+}
+
+.font-alexandria {
+  font-family: 'Alexandria', 'Cairo', sans-serif;
+}
+
+.font-luxury {
+  font-family: 'Cairo', 'Alexandria', 'Almarai', sans-serif;
+}
+
+.font-heading {
+  font-family: 'Cairo', 'Alexandria', sans-serif;
+}
+
+.font-body {
+  font-family: 'Cairo', 'Alexandria', 'Almarai', sans-serif;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.92; transform: scale(1.02); }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 3s ease-in-out infinite;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #printable-compliance-report,
+  #printable-compliance-report * {
+    visibility: visible;
+  }
+  #printable-compliance-report {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0 !important;
+    padding: 20px !important;
+    box-shadow: none !important;
+    border: none !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  @page {
+    size: A4 portrait;
+    margin: 10mm;
+  }
+}
